@@ -56,30 +56,81 @@ void setup()
   Serial.begin(9600);
 } 
 
+int userInput()
+{
+  Serial.flush();
+  while(Serial.available()){ //clears incoming Serial buffer
+    Serial.read();
+  }
+  
+  Serial.println("Choice (rock=0, scissors=1, paper=2):");
+  while(!Serial.available()){} //halts program until input is received
+  int choice = Serial.parseInt();
+  
+  Serial.println(choice, DEC);
+  if (choice == 0)
+    return 0;
+  else if (choice == 1)
+    return 1;
+  else if (choice == 2)
+    return 2;
+}
+  
+int whoWins(int user, int robot)
+// return 0 for draw, 1 for user win, 2 for robot win
+{
+  if (user == robot)
+    return 0;
+  else if (user == 0){
+    if (robot == 1)
+      return 1;
+    else if (robot == 2)
+      return 2;
+  }
+  else if (user == 1){
+    if (robot == 0)
+      return 2;
+    else if (robot == 2)
+      return 1;
+  }
+  else if (user == 2){
+    if (robot == 0)
+      return 1;
+    else if (robot == 1)
+      return 2;
+  }
+}
+
 void loop() 
 {
-    countdown();
+    int user = userInput();
     
- 
-     
+    countdown();
+         
     rock.write(stop_move1);
     paper.write(stop_move2);
 //    scissors.write(stop_move1);
    
     delay(300);
     
-    int randomMove = random(2);
+    int randomMove = random(0,3);
     if(randomMove == 0){
       makeMoveRock();
     }
 //    else if(randomMove == 1){
 //      makeMove(scissors);
 //    }
-    else{
+    else if(randomMove == 2){
       makeMovePaper();
     }
+
+    Serial.print("Robot plays: ");
+    Serial.println(randomMove);
+    Serial.print("Winner (0=draw, 1=user, 2=robot): ");
+    Serial.println(whoWins(user, randomMove));
+        
     rock.write(stop_move1);
     paper.write(stop_move2);
 //    scissors.write(stop_move);
-    delay(1000);   
+    delay(1000);
 } 
