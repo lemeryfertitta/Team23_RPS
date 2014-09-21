@@ -32,7 +32,7 @@ void makeMoveRock()
   rock.write(up_move);
   delay(delay_time);
   rock.write(stop_move1);
-  delay(300); // holds the choosen move for given delay
+  delay(300); // holds the chosen move for given delay
   rock.write(down_move);
   delay(delay_time);
   rock.write(stop_move1);
@@ -42,7 +42,7 @@ void makeMovePaper()
   paper.write(up_move);
   delay(delay_time);
   paper.write(stop_move2);
-  delay(300); // holds the choosen move for given delay
+  delay(300); // holds the chosen move for given delay
   paper.write(down_move);
   delay(delay_time);
   paper.write(stop_move2);
@@ -57,8 +57,10 @@ void setup()
 } 
 
 int userInput()
+// gets user input for move
+// can be changed later for input from buttons; uses serial monitor for now
 {
-  Serial.flush();
+  Serial.flush(); // clears outgoin Serial buffer
   while(Serial.available()){ //clears incoming Serial buffer
     Serial.read();
   }
@@ -67,7 +69,7 @@ int userInput()
   while(!Serial.available()){} //halts program until input is received
   int choice = Serial.parseInt();
   
-  Serial.println(choice, DEC);
+  Serial.println(choice, DEC); 
   if (choice == 0)
     return 0;
   else if (choice == 1)
@@ -78,22 +80,23 @@ int userInput()
   
 int whoWins(int user, int robot)
 // return 0 for draw, 1 for user win, 2 for robot win
+// return values may be changed later
 {
-  if (user == robot)
+  if (user == robot) // draw
     return 0;
-  else if (user == 0){
+  else if (user == 0){  // user played rock
     if (robot == 1)
       return 1;
     else if (robot == 2)
       return 2;
   }
-  else if (user == 1){
+  else if (user == 1){  // user played scissors
     if (robot == 0)
       return 2;
     else if (robot == 2)
       return 1;
   }
-  else if (user == 2){
+  else if (user == 2){  // user played paper
     if (robot == 0)
       return 1;
     else if (robot == 1)
@@ -103,7 +106,7 @@ int whoWins(int user, int robot)
 
 void loop() 
 {
-    int user = userInput();
+    int user = userInput(); // store user input
     
     countdown();
          
@@ -124,6 +127,7 @@ void loop()
       makeMovePaper();
     }
 
+    // prints info on game
     Serial.print("Robot plays: ");
     Serial.println(randomMove);
     Serial.print("Winner (0=draw, 1=user, 2=robot): ");
