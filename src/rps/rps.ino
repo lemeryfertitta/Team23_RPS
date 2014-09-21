@@ -60,7 +60,7 @@ int userInput()
 // gets user input for move
 // can be changed later for input from buttons; uses serial monitor for now
 {
-  Serial.flush(); // clears outgoin Serial buffer
+  Serial.flush(); // clears outgoing Serial buffer
   while(Serial.available()){ //clears incoming Serial buffer
     Serial.read();
   }
