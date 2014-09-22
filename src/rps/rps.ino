@@ -50,30 +50,39 @@ void countdown()
   }
 }
 // the makeMove functions hold up the chosen move for pauseTime and then put the arm down
-void makeMoveRock()
+void makeMove(Servo armToMove)
 {
-  rock.write(downAngle);
+  armToMove.write(downAngle);
   delay(moveTime);
   delay(pauseTime); // holds the chosen move for given delay
-  rock.write(upAngle);
+  armToMove.write(upAngle);
   delay(moveTime);
 }
-void makeMovePaper()
-{
-  paper.write(downAngle);
-  delay(moveTime);
-  delay(pauseTime); // holds the chosen move for given delay
-  paper.write(upAngle);
-  delay(moveTime);
-}
-void makeMoveScissors()
-{
-  scissors.write(downAngle);
-  delay(moveTime);
-  delay(pauseTime); // holds the chosen move for given delay
-  scissors.write(upAngle);
-  delay(moveTime);
-}
+// obsolete for fixed:
+//void makeMoveRock()
+//{
+//  rock.write(downAngle);
+//  delay(moveTime);
+//  delay(pauseTime); // holds the chosen move for given delay
+//  rock.write(upAngle);
+//  delay(moveTime);
+//}
+//void makeMovePaper()
+//{
+//  paper.write(downAngle);
+//  delay(moveTime);
+//  delay(pauseTime); // holds the chosen move for given delay
+//  paper.write(upAngle);
+//  delay(moveTime);
+//}
+//void makeMoveScissors()
+//{
+//  scissors.write(downAngle);
+//  delay(moveTime);
+//  delay(pauseTime); // holds the chosen move for given delay
+//  scissors.write(upAngle);
+//  delay(moveTime);
+//}
 
 void setup() 
 { 
@@ -157,13 +166,13 @@ void loop()
     
     int randomMove = random(0,3);
     if(randomMove == rockInt){
-      makeMoveRock();
+      makeMove(rock);
     }
     else if(randomMove == paperInt){
-      makeMovePaper();
+      makeMove(paper);
     }
     else if(randomMove == scissorsInt){
-      makeMoveScissors();
+      makeMove(scissors);
     }
     
    
