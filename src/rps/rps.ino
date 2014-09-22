@@ -13,6 +13,12 @@ int up_move = 180;
 int down_move = 0;
 
 int delay_time = 350;
+
+// track scores
+int userScore;
+int robotScore;
+// CONST: max score for ending game; change to desired value
+int maxScore = 5;
  
 void countdown()
 {
@@ -104,6 +110,23 @@ int whoWins(int user, int robot)
   }
 }
 
+void updateScore(int winner)
+// adds 1 to winner's score constant
+{
+  if (winner == 1)
+    ++userScore;
+  else if (winner == 1)
+    ++robotScore;
+}
+
+boolean gameOver()
+// checks if game is over
+{
+  if (userScore == maxScore || robotScore == maxScore)
+    return True;
+  else
+    return False;
+
 void loop() 
 {
     int user = userInput(); // store user input
@@ -126,15 +149,22 @@ void loop()
     else if(randomMove == 2){
       makeMovePaper();
     }
-
-    // prints info on game
-    Serial.print("Robot plays: ");
-    Serial.println(randomMove);
-    Serial.print("Winner (0=draw, 1=user, 2=robot): ");
-    Serial.println(whoWins(user, randomMove));
-        
+    
     rock.write(stop_move1);
     paper.write(stop_move2);
 //    scissors.write(stop_move);
+
     delay(1000);
+    
+    // prints info on game; TEMP
+    Serial.print("Robot plays: ");
+    Serial.println(randomMove);
+    Serial.print("Winner (0=draw, 1=user, 2=robot): ");
+    Serial.println(winner);
+    
+    //determine winner, update score, and check if game is over
+    int winner = whoWins(user, randomMove);
+    updateScore(winner);
+    if (gameOver())
+      Serial.println("Game Over");
 } 
