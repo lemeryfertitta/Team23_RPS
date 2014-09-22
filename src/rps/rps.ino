@@ -22,18 +22,10 @@ int userWinInt = 1;
 int botWinInt = 2;
 
 // Values to control the speed of the continuous servos - use floats for percision
-float rockStop = 118;
-float paperStop = 97;
-// NOTE: its worth testing is speed is relative; otherwise just use commented out values
-// Also might have to switch up and down depending on Servo orientation
-// int up = 180
-// int down = 0
-float rockUp = rockStop + 50;
-float paperUp = paperStop + 50;
-float rockDown = rockStop - 50;
-float paperDown = paperStop - 50;
+int upAngle = 45;
+int downAngle = 0;
 
-int moveTime = 350; // the amount of time (ms) to allow the servos to move up or down
+int moveTime = 500; // the amount of time (ms) to allow the servos to move up or down
 int pauseTime = 1000; // the amount of time for the bot to hold up its chosen move
 
 // track scores
@@ -45,40 +37,42 @@ int maxScore = 5;
 // the countdown function is the robots way of doing "Rock, Paper, Scissors"
 void countdown()
 {
-  // move all arms up and down three times
+  // move all arms down and up three times
   for(int i=0; i<3; i++){
-     rock.write(rockUp);
-     paper.write(paperUp);
+     rock.write(downAngle);
+     paper.write(downAngle);
+     scissors.write(downAngle);
      delay(moveTime);
-     rock.write(rockDown);
-     paper.write(paperDown);
+     rock.write(upAngle);
+     paper.write(upAngle);
+     scissors.write(upAngle);
      delay(moveTime);
   }
 }
 // the makeMove functions hold up the chosen move for pauseTime and then put the arm down
 void makeMoveRock()
 {
-  rock.write(rockUp);
+  rock.write(downAngle);
   delay(moveTime);
-  rock.write(rockStop);
   delay(pauseTime); // holds the chosen move for given delay
-  rock.write(down_move);
+  rock.write(upAngle);
   delay(moveTime);
-  rock.write(rockStop);
 }
 void makeMovePaper()
 {
-  paper.write(paperUp);
+  paper.write(downAngle);
   delay(moveTime);
-  paper.write(paperStop);
   delay(pauseTime); // holds the chosen move for given delay
-  paper.write(paperDown);
+  paper.write(upAngle);
   delay(moveTime);
-  paper.write(paperStop);
 }
 void makeMoveScissors()
 {
-  
+  scissors.write(downAngle);
+  delay(moveTime);
+  delay(pauseTime); // holds the chosen move for given delay
+  scissors.write(upAngle);
+  delay(moveTime);
 }
 
 void setup() 
@@ -150,18 +144,16 @@ boolean gameOver()
 // checks if game is over
 {
   if (userScore == maxScore || robotScore == maxScore)
-    return True;
+    return true;
   else
-    return False;
+    return false;
+}
 
-void loop() 
+void loop()
 {
-    int user = userInput(); // store user input
+    //int user = userInput(); // store user input
     
     countdown();
-         
-    rock.write(rockStop);
-    paper.write(paperStop);
     
     int randomMove = random(0,3);
     if(randomMove == rockInt){
@@ -170,22 +162,20 @@ void loop()
     else if(randomMove == paperInt){
       makeMovePaper();
     }
-//    else if(randomMove == scissorsInt){
-//      makeMoveScissors();
-//    }
+    else if(randomMove == scissorsInt){
+      makeMoveScissors();
+    }
     
-    rock.write(rockStop);
-    paper.write(paperStop);
+   
     
-    // prints info on game; TEMP
-    Serial.print("Robot plays: ");
-    Serial.println(randomMove);
-    Serial.print("Winner (0=draw, 1=user, 2=robot): ");
-    Serial.println(winner);
-    
-    //determine winner, update score, and check if game is over
-    int winner = whoWins(user, randomMove);
-    updateScore(winner);
-    if (gameOver())
-      Serial.println("Game Over");
+//    //determine winner, update score, and check if game is over
+//    int winner = whoWins(user, randomMove);
+//     // prints info on game; TEMP
+//    Serial.print("Robot plays: ");
+//    Serial.println(randomMove);
+//    Serial.print("Winner (0=draw, 1=user, 2=robot): ");
+//    Serial.println(winner);
+//    updateScore(winner);
+//    if (gameOver())
+//      Serial.println("Game Over");
 } 
