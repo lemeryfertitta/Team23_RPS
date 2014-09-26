@@ -17,9 +17,9 @@ int rockInt = 0;
 int paperInt = 1;
 int scissorsInt = 2;
 
-int drawInt = 0;
-int userWinInt = 1;
-int botWinInt = 2;
+int draw = 0;
+int userWin = 1;
+int botWin = 2;
 
 // Values to control the speed of the continuous servos - use floats for percision
 int upAngle = 45;
@@ -58,31 +58,6 @@ void makeMove(Servo armToMove)
   armToMove.write(upAngle);
   delay(moveTime);
 }
-// obsolete for fixed:
-//void makeMoveRock()
-//{
-//  rock.write(downAngle);
-//  delay(moveTime);
-//  delay(pauseTime); // holds the chosen move for given delay
-//  rock.write(upAngle);
-//  delay(moveTime);
-//}
-//void makeMovePaper()
-//{
-//  paper.write(downAngle);
-//  delay(moveTime);
-//  delay(pauseTime); // holds the chosen move for given delay
-//  paper.write(upAngle);
-//  delay(moveTime);
-//}
-//void makeMoveScissors()
-//{
-//  scissors.write(downAngle);
-//  delay(moveTime);
-//  delay(pauseTime); // holds the chosen move for given delay
-//  scissors.write(upAngle);
-//  delay(moveTime);
-//}
 
 void setup() 
 { 
@@ -96,13 +71,11 @@ int userInput()
 // gets user input for move
 // can be changed later for input from buttons; uses serial monitor for now
 {
-  Serial.flush(); // clears outgoing Serial buffer
-  while(Serial.available()){ //clears incoming Serial buffer
-    Serial.read();
+  int lastInput;
+  while(Serial.available()){
+    lastInput = Serial.read(); //this read to the end and store the last line of input
   }
-  
-  Serial.println("Choice (rock=0, paper=1, scissors=2):");
-  while(!Serial.available()){} //halts program until input is received
+
   int choice = Serial.parseInt();
   
   Serial.println(choice, DEC); 
@@ -119,33 +92,33 @@ int whoWins(int user, int robot)
 // return values may be changed later
 {
   if (user == robot) // draw
-    return drawInt;
+    return draw;
   else if (user == rockInt){  // user played rock
     if (robot == scissorsInt)
-      return userWinInt;
+      return userWin;
     else if (robot == paperInt)
-      return botWinInt;
+      return botWin;
   }
   else if (user == paperInt){  // user played paper
     if (robot == rockInt)
-      return userWinInt;
+      return userWin;
     else if (robot == scissorsInt)
-      return botWinInt;
+      return botWin;
   }
   else if (user == scissorsInt){  // user played scissors
     if (robot == paperInt)
-      return userWinInt;
+      return userWin;
     else if (robot == rockInt)
-      return botWinInt;
+      return botWin;
   }
 }
 
 void updateScore(int winner)
 // adds 1 to winner's score constant
 {
-  if (winner == userWinInt)
+  if (winner == userWin)
     ++userScore;
-  else if (winner == botWinInt)
+  else if (winner == botWin)
     ++robotScore;
 }
 
@@ -159,32 +132,19 @@ boolean gameOver()
 }
 
 void loop()
-{
-    //int user = userInput(); // store user input
-    
+{   
     countdown();
     
-    int randomMove = random(0,3);
-    if(randomMove == rockInt){
-      makeMove(rock);
-    }
-    else if(randomMove == paperInt){
-      makeMove(paper);
-    }
-    else if(randomMove == scissorsInt){
-      makeMove(scissors);
-    }
+    int userMove = userInput();
     
-   
+    int botMove = random(0,3);
+    if(botMove == rockInt){ makeMove(rock); }
+    else if(botMove == paperInt){ makeMove(paper); }
+    else if(botMove == scissorsInt){ makeMove(scissors); }
     
-//    //determine winner, update score, and check if game is over
-//    int winner = whoWins(user, randomMove);
-//     // prints info on game; TEMP
-//    Serial.print("Robot plays: ");
-//    Serial.println(randomMove);
-//    Serial.print("Winner (0=draw, 1=user, 2=robot): ");
-//    Serial.println(winner);
-//    updateScore(winner);
-//    if (gameOver())
-//      Serial.println("Game Over");
+   int winner = whoWins(userMove, botMove);
+   updateScore(winner);
+   if (gameOver()){
+     // do something?
+   }
 } 
