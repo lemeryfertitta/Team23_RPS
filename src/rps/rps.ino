@@ -14,7 +14,7 @@ Servo paper;
 Servo scissors;
 
 //initialize library with numbers of interface pins
-LiquidCrystal lcd(12, 11, 3, 2, 1, 0);
+LiquidCrystal lcd(12, 1, 11, 3, 2, 13, 8);
  
 // Int representation for things like random() and userInput
 int rockInt = 0;
@@ -65,12 +65,14 @@ void makeMove(Servo armToMove)
 
 void setup() 
 { 
+  lcd.begin(16, 2);
   rock.attach(rockPin);  // attaches the servo on pin 9 to the servo object 
   paper.attach(paperPin);
   scissors.attach(scissorsPin);
   Serial.begin(9600);
-  lcd.begin(16, 2);
-  updateLCD();
+  
+  lcd.print("hello, world!");
+ // updateLCD();
 } 
 
 void updateLCD()
@@ -175,7 +177,7 @@ void loop()
     
    int winner = whoWins(userMove, botMove);
    updateScore(winner);
-   updateLCD();
+  // updateLCD();
    if (gameOver()){
      printWinner();
      // do something?
