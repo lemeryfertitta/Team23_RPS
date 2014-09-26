@@ -162,6 +162,7 @@ void loop()
    updateScore(winner);
    updateLCD();
    if (gameOver()){
+     lcd.clear();
      // do something?
    }
 } 
