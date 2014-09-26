@@ -153,12 +153,12 @@ void printWinner()
   lcd.setCursor(0, 0);
   if (userScore == maxScore)
   {
-    String toPrint = "You Win!"
+    String toPrint = "You Win!";
     lcd.print(toPrint);
   }  
   else
   {
-    String toPrint = "You Lose! You Suck!"
+    String toPrint = "You Lose! You Suck!";
     lcd.print(toPrint);  
   }
 }  
