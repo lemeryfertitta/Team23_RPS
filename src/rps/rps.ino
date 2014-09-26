@@ -1,6 +1,7 @@
 // TEAM 23 ROCK, PAPER, SCISSORS ROBOT
 
 #include <Servo.h> 
+#include <LiquidCrystal.h>
 
 // pin declarations
 int rockPin = 9;
@@ -11,6 +12,9 @@ int scissorsPin = 11;
 Servo rock;
 Servo paper;
 Servo scissors;
+
+//initialize library with numbers of interface pins
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
  
 // Int representation for things like random() and userInput
 int rockInt = 0;
@@ -29,8 +33,8 @@ int moveTime = 500; // the amount of time (ms) to allow the servos to move up or
 int pauseTime = 1000; // the amount of time for the bot to hold up its chosen move
 
 // track scores
-int userScore;
-int robotScore;
+int userScore = 0;
+int robotScore = 0;
 // CONST: max score for ending game; change to desired value
 int maxScore = 5;
 
@@ -65,7 +69,19 @@ void setup()
   paper.attach(paperPin);
   scissors.attach(scissorsPin);
   Serial.begin(9600);
+  lcd.begin(16, 2);
+  updateLCD();
 } 
+
+void updateLCD()
+{
+  String line1 = "User: " + userScore;
+  String line2 = "Robot: " + robotScore;
+  lcd.setCursor(0, 0);
+  lcd.print(line1);
+  lcd.setCursor(0, 1);
+  lcd.print(line2);
+}
 
 int userInput()
 // gets user input for move
@@ -144,6 +160,7 @@ void loop()
     
    int winner = whoWins(userMove, botMove);
    updateScore(winner);
+   updateLCD();
    if (gameOver()){
      // do something?
    }
