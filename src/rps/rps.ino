@@ -1,6 +1,8 @@
 // TEAM 23 ROCK, PAPER, SCISSORS ROBOT
 
-#include <Servo.h> 
+#include <Servo.h>
+#include <IRremote.h>
+#include <IRremoteInt.h>
 
 // pin declarations
 int rockPin = 9;
@@ -34,6 +36,24 @@ int robotScore;
 // CONST: max score for ending game; change to desired value
 int maxScore = 5;
 
+// setup constants for SparkFun's IR Remote
+const uint16_t BUTTON_POWER = 0xD827; // i.e. 0x10EFD827
+const uint16_t BUTTON_A = 0xF807;
+const uint16_t BUTTON_B = 0x7887;
+const uint16_t BUTTON_C = 0x58A7;
+const uint16_t BUTTON_UP = 0xA05F;
+const uint16_t BUTTON_DOWN = 0x00FF;
+const uint16_t BUTTON_LEFT = 0x10EF;
+const uint16_t BUTTON_RIGHT = 0x807F;
+const uint16_t BUTTON_CIRCLE = 0x20DF;
+
+// Connect the output of the IR receiver diode to pin 11. CHANGE PIN #
+int RECV_PIN = 11;
+// Initialize the irrecv part of the IRremote  library
+IRrecv irrecv(RECV_PIN);
+decode_results results; // This will store our IR received codes
+uint16_t lastCode = 0; // This keeps track of the last code RX'd
+
 // the countdown function is the robots way of doing "Rock, Paper, Scissors"
 void countdown()
 {
@@ -65,28 +85,69 @@ void setup()
   paper.attach(paperPin);
   scissors.attach(scissorsPin);
   Serial.begin(9600);
+  irrecv.enableIRIn(); // Start the receiver
 } 
 
 int userInput()
-// gets user input for move
-// can be changed later for input from buttons; uses serial monitor for now
+// gets user input for move from IR remote
+//maybe add this into a while loop? need to be tested
 {
-  int lastInput;
-  while(Serial.available()){
-    lastInput = Serial.read(); //this read to the end and store the last line of input
-  }
+ if (irrecv.decode(&results)) 
+  {
+    // read the RX'd IR into a 16-bit variable
+    uint16_t resultCode = (results.value & 0xFFFF);
 
-  int choice = Serial.parseInt();
-  
-  Serial.println(choice, DEC); 
-  if (choice == rockInt)
-    return rockInt;
-  else if (choice == paperInt)
-    return paperInt;
-  else if (choice == scissorsInt)
-    return scissorsInt;
+    /* The remote will continue to spit out 0xFFFFFFFF if a 
+     button is held down. If we get 0xFFFFFFF, let's just
+     assume the previously pressed button is being held down */
+    if (resultCode == 0xFFFF)
+      resultCode = lastCode;
+    else
+      lastCode = resultCode;
+
+    // This switch statement checks the received IR code against
+    // all of the known codes. Each button press produces a 
+    // serial output, and has an effect on the LED output.
+    switch (resultCode)
+    {
+      case BUTTON_POWER:
+        Serial.println("Power");
+        break;
+      case BUTTON_A:
+        Serial.println("A");
+        return rockInt;
+        break;
+      case BUTTON_B:
+        Serial.println("B");
+        return paperInt;
+        break;
+      case BUTTON_C:
+        Serial.println("C");
+        return scissorsInt;
+        break;
+      case BUTTON_CIRCLE:
+        Serial.println("Circle");
+        // maybe a wake up call?
+        break;
+      default:
+        Serial.print("Unrecognized code received: 0x");
+        Serial.println(results.value, HEX);
+        break;        
+    }    
+    irrecv.resume(); // Receive the next value
+  }
 }
-  
+
+void clearIR()
+//read IR results until it's clear;
+{
+  while (irrecv.decode(&results)) 
+  {
+    // read the RX'd IR into a 16-bit variable
+    uint16_t resultCode = (results.value & 0xFFFF);
+  }
+}
+
 int whoWins(int user, int robot)
 // return 0 for draw, 1 for user win, 2 for robot win
 // return values may be changed later
@@ -133,6 +194,8 @@ boolean gameOver()
 
 void loop()
 {   
+    // accept user input only during countdown; clear IR codes received before
+    clearIR();    
     countdown();
     
     int userMove = userInput();
