@@ -7,6 +7,17 @@ int rockPin = 9;
 int paperPin = 10;
 int scissorsPin = 11;
 
+int flexSensorMiddlePin = A0;
+int flexSensorRingPin = A1;
+
+// flex sensor calibration values
+int flexLowerBound = 512;
+int flexUpperBound = 614;
+
+// the % value at which we determine a finger to be straight.
+// anything less or equal will be considered a straight finger
+int fingerStraight = 30; 
+
 // Servo object declarations 
 Servo rock;
 Servo paper;
@@ -71,20 +82,14 @@ int userInput()
 // gets user input for move
 // can be changed later for input from buttons; uses serial monitor for now
 {
-  int lastInput;
-  while(Serial.available()){
-    lastInput = Serial.read(); //this read to the end and store the last line of input
-  }
+  int middleReading = analogRead(flexSensorMiddlePin);
+  int ringReading = analogRead(flexSensorRingPin);
+  int middleFinger = map(middleReading, flexLowerBound, flexUpperBound, 0, 100);
+  int ringFinger = map(ringReading, flexLowerBound, flexUpperBound, 0, 100);
 
-  int choice = Serial.parseInt();
-  
-  Serial.println(choice, DEC); 
-  if (choice == rockInt)
-    return rockInt;
-  else if (choice == paperInt)
-    return paperInt;
-  else if (choice == scissorsInt)
-    return scissorsInt;
+  if((ringFinger > fingerStraight) && (middleFinger > fingerStraight)){ return rockInt; }
+  else if ((ringFinger <= fingerStraight) && (middleFinger <= fingerStraight)) { return paperInt; }
+  else if ((ringFinger > fingerStraight) && (middleFinger <= fingerStraight)) { return scissorsInt; }
 }
   
 int whoWins(int user, int robot)
