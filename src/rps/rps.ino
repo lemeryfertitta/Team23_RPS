@@ -14,7 +14,7 @@ Servo paper;
 Servo scissors;
 
 //initialize library with numbers of interface pins
-LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+LiquidCrystal lcd(12, 11, 3, 2, 1, 0);
  
 // Int representation for things like random() and userInput
 int rockInt = 0;
