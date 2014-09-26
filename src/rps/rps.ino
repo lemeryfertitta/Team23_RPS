@@ -147,6 +147,21 @@ boolean gameOver()
     return false;
 }
 
+void printWinner()
+{
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  if (userScore == maxScore)
+  {
+    String toPrint = "You Win!"
+    lcd.print(toPrint);
+  }  
+  else
+  {
+    String toPrint = "You Lose! You Suck!"
+    lcd.print(toPrint);  
+  }
+}  
 void loop()
 {   
     countdown();
@@ -162,7 +177,7 @@ void loop()
    updateScore(winner);
    updateLCD();
    if (gameOver()){
-     lcd.clear();
+     printWinner();
      // do something?
    }
 } 
