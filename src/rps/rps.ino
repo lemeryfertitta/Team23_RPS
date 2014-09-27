@@ -70,15 +70,14 @@ void setup()
   paper.attach(paperPin);
   scissors.attach(scissorsPin);
   Serial.begin(9600);
-  
-  lcd.print("hello, world!");
- // updateLCD();
+  updateLCD();
 } 
 
 void updateLCD()
 {
-  String line1 = "User: " + userScore;
-  String line2 = "Robot: " + robotScore;
+  String line1 = "User: " + String(userScore);
+  String line2 = "Robot: " + String(robotScore);
+  lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print(line1);
   lcd.setCursor(0, 1);
@@ -177,7 +176,7 @@ void loop()
     
    int winner = whoWins(userMove, botMove);
    updateScore(winner);
-  // updateLCD();
+   updateLCD();
    if (gameOver()){
      printWinner();
      // do something?
