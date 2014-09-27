@@ -6,7 +6,7 @@
 // pin declarations
 int rockPin = 9;
 int paperPin = 10;
-int scissorsPin = 11;
+int scissorsPin = 13;
 
 // Servo object declarations 
 Servo rock;
@@ -14,7 +14,7 @@ Servo paper;
 Servo scissors;
 
 //initialize library with numbers of interface pins
-LiquidCrystal lcd(12, 1, 11, 3, 2, 13, 8);
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
  
 // Int representation for things like random() and userInput
 int rockInt = 0;
