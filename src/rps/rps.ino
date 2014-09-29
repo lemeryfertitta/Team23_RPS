@@ -50,7 +50,7 @@ int pauseTime = 1000; // the amount of time for the bot to hold up its chosen mo
 int userScore = 0;
 int robotScore = 0;
 // CONST: max score for ending game; change to desired value
-int maxScore = 5;
+int maxScore = 7;
 
 int userMove = 0;
 int botMove = 0; 
