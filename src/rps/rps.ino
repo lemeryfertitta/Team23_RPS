@@ -4,9 +4,23 @@
 #include <LiquidCrystal.h>
 
 // pin declarations
-int rockPin = 9;
-int paperPin = 10;
-int scissorsPin = 13;
+int rockPin = 8;
+int paperPin = 9;
+int scissorsPin = 10;
+
+int flexSensorMiddlePin = A1;
+int flexSensorRingPin = A2;
+
+// flex sensor calibration values
+int flexMiddleLowerBound = 250;
+int flexMiddleUpperBound = 450;
+int flexRingLowerBound   = 360;
+int flexRingUpperBound   = 490;
+
+// the % value at which we determine a finger to be straight.
+// anything less or equal will be considered a straight finger
+int fingerStraight = 30; 
+//>>>>>>> flexSensor
 
 // Servo object declarations 
 Servo rock;
@@ -38,6 +52,11 @@ int robotScore = 0;
 // CONST: max score for ending game; change to desired value
 int maxScore = 5;
 
+int userMove = 0;
+int botMove = 0; 
+
+boolean cheating = true;
+
 // the countdown function is the robots way of doing "Rock, Paper, Scissors"
 void countdown()
 {
@@ -63,16 +82,6 @@ void makeMove(Servo armToMove)
   delay(moveTime);
 }
 
-void setup() 
-{ 
-  lcd.begin(16, 2);
-  rock.attach(rockPin);  // attaches the servo on pin 9 to the servo object 
-  paper.attach(paperPin);
-  scissors.attach(scissorsPin);
-  Serial.begin(9600);
-  updateLCD();
-} 
-
 void updateLCD()
 {
   String line1 = "User: " + String(userScore);
@@ -88,45 +97,37 @@ int userInput()
 // gets user input for move
 // can be changed later for input from buttons; uses serial monitor for now
 {
-  int lastInput;
-  while(Serial.available()){
-    lastInput = Serial.read(); //this read to the end and store the last line of input
-  }
+  int middleReading = analogRead(flexSensorMiddlePin);
+  int ringReading = analogRead(flexSensorRingPin);
+  int middleFinger = map(middleReading, flexMiddleLowerBound, flexMiddleUpperBound, 0, 100);
+  int ringFinger = map(ringReading, flexRingLowerBound, flexRingUpperBound, 0, 100);
 
-  int choice = Serial.parseInt();
-  
-  Serial.println(choice, DEC); 
-  if (choice == rockInt)
+  if((ringFinger < fingerStraight) && (middleFinger < fingerStraight))
+  { 
     return rockInt;
-  else if (choice == paperInt)
-    return paperInt;
-  else if (choice == scissorsInt)
-    return scissorsInt;
+  }
+  else if ((ringFinger >= fingerStraight) && (middleFinger >= fingerStraight)) 
+  { 
+    return paperInt; 
+  }
+  else if ((ringFinger < fingerStraight) && (middleFinger >= fingerStraight))
+ { 
+   return scissorsInt; 
+ }
 }
   
 int whoWins(int user, int robot)
 // return 0 for draw, 1 for user win, 2 for robot win
 // return values may be changed later
 {
-  if (user == robot) // draw
-    return draw;
-  else if (user == rockInt){  // user played rock
-    if (robot == scissorsInt)
-      return userWin;
-    else if (robot == paperInt)
-      return botWin;
+  if (user == ((robot+1)%3)){
+    return userWin;
   }
-  else if (user == paperInt){  // user played paper
-    if (robot == rockInt)
-      return userWin;
-    else if (robot == scissorsInt)
-      return botWin;
+  else if (robot == ((user+1)%3)){
+    return botWin;
   }
-  else if (user == scissorsInt){  // user played scissors
-    if (robot == paperInt)
-      return userWin;
-    else if (robot == rockInt)
-      return botWin;
+  else{
+   return draw; 
   }
 }
 
@@ -162,23 +163,38 @@ void printWinner()
     String toPrint = "You Lose! You Suck!";
     lcd.print(toPrint);  
   }
-}  
+}
+
+void setup() 
+{ 
+  lcd.begin(16, 2);
+  rock.attach(rockPin);  // attaches the servo on pin 9 to the servo object 
+  paper.attach(paperPin);
+  scissors.attach(scissorsPin);
+  Serial.begin(9600);
+  updateLCD();
+}
+
 void loop()
 {   
     countdown();
+    userMove = userInput();
     
-    int userMove = userInput();
+    if(cheating == true){
+      botMove = (userMove+1)%3;
+    }
+    else {
+      botMove = random(0,3);
+    }
     
-    int botMove = random(0,3);
     if(botMove == rockInt){ makeMove(rock); }
     else if(botMove == paperInt){ makeMove(paper); }
     else if(botMove == scissorsInt){ makeMove(scissors); }
     
-   int winner = whoWins(userMove, botMove);
-   updateScore(winner);
-   updateLCD();
-   if (gameOver()){
-     printWinner();
-     // do something?
+    int winner = whoWins(userMove, botMove);
+    updateScore(winner);
+    updateLCD();
+    if (gameOver()){
+      printWinner();
    }
 } 
