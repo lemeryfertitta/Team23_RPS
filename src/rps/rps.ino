@@ -48,7 +48,7 @@ const uint16_t BUTTON_RIGHT = 0x807F;
 const uint16_t BUTTON_CIRCLE = 0x20DF;
 
 // Connect the output of the IR receiver diode to pin 11. CHANGE PIN #
-int RECV_PIN = 11;
+int RECV_PIN = 6;
 // Initialize the irrecv part of the IRremote  library
 IRrecv irrecv(RECV_PIN);
 decode_results results; // This will store our IR received codes
