@@ -113,6 +113,18 @@ void updateLCD()
   lcd.print(line2);
 }
 
+void power()
+{
+  gameOn = !gameOn;
+  if (gameOn){
+    lcd.clear();
+  }
+  else{
+    userScore = 0;
+    robotScore = 0;
+  }
+}
+    
 int irInput()
 {
  int irValue;
@@ -126,10 +138,10 @@ int irInput()
     /* The remote will continue to spit out 0xFFFFFFFF if a 
      button is held down. If we get 0xFFFFFFF, let's just
      assume the previously pressed button is being held down */
-    if (resultCode == 0xFFFF)
-      resultCode = lastCode;
-    else
-      lastCode = resultCode;
+//    if (resultCode == 0xFFFF)
+//      resultCode = lastCode;
+//    else
+//      lastCode = resultCode;
 
     // This switch statement checks the received IR code against
     // all of the known codes. Each button press produces a 
@@ -138,7 +150,7 @@ int irInput()
     {
       case BUTTON_POWER:
         Serial.println("Power");
-        gameOn = !gameOn;
+        power();
         irValue = -1;
         break;
       case BUTTON_A:
@@ -152,6 +164,7 @@ int irInput()
       case BUTTON_C:
         Serial.println("C");
         irValue = scissorsInt;
+        cheating = !cheating;
         break;
       case BUTTON_CIRCLE:
         Serial.println("Circle");
@@ -162,11 +175,11 @@ int irInput()
         Serial.println(results.value, HEX);
         break;        
     }
-//    if (!gameOn){
-//      delay(100);
-//    }
-  }
+    if (!gameOn){
+      delay(100);
+    }
   irrecv.resume(); // Receive the next value
+  }
   return irValue;
 }
 
@@ -290,21 +303,9 @@ void loop()
 {
  //clearIR();
  if (gameOn){
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  String toPrint = "ON";
-  lcd.print(toPrint);
   game();
  }
- else {
-  
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  String toPrint = "OFF";
-  lcd.print(toPrint);
- }
  int ir = irInput();
- //Serial.println(gameOn);
  //irrecv.resume(); // Receive the next value
 }
 
