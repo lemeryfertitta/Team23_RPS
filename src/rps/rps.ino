@@ -75,7 +75,7 @@ decode_results results; // This will store our IR received codes
 uint16_t lastCode = 0; // This keeps track of the last code RX'd
 
 boolean cheating = true;
-boolean gameOn = false;
+boolean gameOn = true;
 
 // the countdown function is the robots way of doing "Rock, Paper, Scissors"
 void countdown()
@@ -115,6 +115,9 @@ void updateLCD()
 
 int irInput()
 {
+ int irValue;
+    irValue = 0;
+  
  if (irrecv.decode(&results)) 
   {
     // read the RX'd IR into a 16-bit variable
@@ -136,20 +139,19 @@ int irInput()
       case BUTTON_POWER:
         Serial.println("Power");
         gameOn = !gameOn;
-        Serial.println("flip");
-        return -1;
+        irValue = -1;
         break;
       case BUTTON_A:
         Serial.println("A");
-        return rockInt;
+        irValue = rockInt;
         break;
       case BUTTON_B:
         Serial.println("B");
-        return paperInt;
+        irValue = paperInt;
         break;
       case BUTTON_C:
         Serial.println("C");
-        return scissorsInt;
+        irValue = scissorsInt;
         break;
       case BUTTON_CIRCLE:
         Serial.println("Circle");
@@ -159,15 +161,19 @@ int irInput()
         Serial.print("Unrecognized code received: 0x");
         Serial.println(results.value, HEX);
         break;        
-    }    
-    //irrecv.resume(); // Receive the next value
+    }
+//    if (!gameOn){
+//      delay(100);
+//    }
   }
+  irrecv.resume(); // Receive the next value
+  return irValue;
 }
 
 void clearIR()
 //read IR results until it's clear;
 {
-  while (irrecv.decode(&results)) 
+  if (irrecv.decode(&results)) 
   {
   irrecv.resume(); // Receive the next value
   Serial.println("clearIR");
@@ -291,6 +297,7 @@ void loop()
   game();
  }
  else {
+  
   lcd.clear();
   lcd.setCursor(0, 0);
   String toPrint = "OFF";
@@ -298,6 +305,6 @@ void loop()
  }
  int ir = irInput();
  //Serial.println(gameOn);
- irrecv.resume(); // Receive the next value
+ //irrecv.resume(); // Receive the next value
 }
 
