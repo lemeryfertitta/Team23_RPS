@@ -74,7 +74,7 @@ IRrecv irrecv(RECV_PIN);
 decode_results results; // This will store our IR received codes
 uint16_t lastCode = 0; // This keeps track of the last code RX'd
 
-boolean cheating = true;
+boolean cheating = false;
 boolean gameOn = true;
 
 // the countdown function is the robots way of doing "Rock, Paper, Scissors"
@@ -115,7 +115,7 @@ void updateLCD()
 
 void power()
 {
-  gameOn = !gameOn;
+  
   if (gameOn){
     lcd.clear();
   }
@@ -123,6 +123,7 @@ void power()
     userScore = 0;
     robotScore = 0;
   }
+  gameOn = !gameOn;
 }
     
 int irInput()
@@ -294,9 +295,9 @@ void game()
     int winner = whoWins(userMove, botMove);
     updateScore(winner);
     updateLCD();
-    if (gameOver()){
-      printWinner();
-   }
+//    if (gameOver()){
+//      printWinner();
+//   }
 } 
 
 void loop()
